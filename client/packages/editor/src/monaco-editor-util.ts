@@ -17,8 +17,8 @@ export const MINIMAL_STYLE: monaco.editor.IStandaloneEditorConstructionOptions =
 };
 
 export namespace MonacoEditorUtil {
-  export function initMonaco(monaco: Monaco) {
-    loader.config({ monaco });
+  export function initMonaco(usableMonaco: Monaco = monaco): Monaco {
+    loader.config({ monaco: usableMonaco });
 
     monaco.languages.register({
       id: 'form',
@@ -36,5 +36,7 @@ export namespace MonacoEditorUtil {
       inherit: true,
       rules: []
     });
+
+    return usableMonaco;
   }
 }

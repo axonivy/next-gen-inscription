@@ -22,7 +22,7 @@ const MappingTreeWithCode = (props: {
       </LabelInput>
       <LabelInput label='Code' htmlFor='code' message={props.message}>
         <Editor
-          className='input'
+          className='input code-editor'
           defaultValue={props.data.code}
           value={props.data.code}
           defaultLanguage='form'

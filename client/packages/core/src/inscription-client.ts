@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash/cloneDeep';
 import { createMessageConnection, Emitter, Event } from 'vscode-jsonrpc';
 import { Disposable } from 'vscode-ws-jsonrpc';
 import { ConnectionUtil } from './connection-util';
@@ -11,7 +12,7 @@ import { validateInscriptionData } from './validation/validation-mock';
 export interface InscriptionClient {
   initialize(): Promise<boolean>;
   data(pid: string): Promise<InscriptionData>;
-  saveData(args: InscriptionSaveData): Promise<InscriptionValidation[]>;
+  saveData(data: InscriptionSaveData): Promise<InscriptionValidation[]>;
 
   dialogStarts(): Promise<DialogStart[]>;
   outMapping(): Promise<Variable[]>;
@@ -21,27 +22,49 @@ export interface InscriptionClient {
 }
 
 export class InscriptionClientMock implements InscriptionClient {
-  initialize(): Promise<boolean> {
-    return Promise.resolve(true);
+  protected store: Map<string, InscriptionData> = new Map();
+  protected onDataChangedEmitter = new Emitter<InscriptionData>();
+  onDataChanged = this.onDataChangedEmitter.event;
+  protected onValidationEmitter = new Emitter<InscriptionValidation[]>();
+  onValidation = this.onValidationEmitter.event;
+
+  async initialize(): Promise<boolean> {
+    return true;
   }
 
-  data(pid: string): Promise<InscriptionData> {
-    return Promise.resolve({ pid: pid, type: 'UserDialog', readonly: false, data: USER_DIALOG_DATA });
+  async data(pid: string): Promise<InscriptionData> {
+    let inscriptionData = this.store.get(pid);
+    if(!inscriptionData) {
+      const data = cloneDeep(USER_DIALOG_DATA);
+      data.nameData.description = pid;
+      inscriptionData = { pid, type: 'UserDialog', readonly: false, data };
+      this.store.set(pid, inscriptionData);
+    }
+    // TODO: Validation on every request, maybe client can explicitly ask for validation
+    this.validate(inscriptionData);
+    return inscriptionData;
   }
 
-  saveData(args: InscriptionSaveData): Promise<InscriptionValidation[]> {
-    return Promise.resolve(validateInscriptionData(args));
+  async validate(data: InscriptionSaveData): Promise<InscriptionValidation[]> {
+    const validation = validateInscriptionData(data);
+    this.onValidationEmitter.fire(validation);
+    return validation;
   }
 
-  dialogStarts(): Promise<DialogStart[]> {
-    return Promise.resolve(DIALOG_STARTS_META);
-  }
-  outMapping(): Promise<Variable[]> {
-    return Promise.resolve([]);
+  async saveData(data: InscriptionSaveData): Promise<InscriptionValidation[]> {
+    const fullData = { ...data, readonly: false };
+    this.store.set(data.pid, fullData);
+    this.onDataChangedEmitter.fire(fullData);
+    return this.validate(data);
   }
 
-  onDataChanged = new Emitter<InscriptionData>().event;
-  onValidation = new Emitter<InscriptionValidation[]>().event;
+  async dialogStarts(): Promise<DialogStart[]> {
+    return DIALOG_STARTS_META;
+  }
+  
+  async outMapping(): Promise<Variable[]> {
+    return [];
+  }
 }
 
 export class JsonRpcInscriptionClient extends BaseRcpClient implements InscriptionClient {
@@ -66,16 +89,16 @@ export class JsonRpcInscriptionClient extends BaseRcpClient implements Inscripti
     return this.sendRequest('data', { pid });
   }
 
-  saveData(args: InscriptionSaveData): Promise<InscriptionValidation[]> {
-    return this.sendRequest('saveData', { ...args });
-  }
-
   dialogStarts(): Promise<DialogStart[]> {
     return this.sendRequest('dialogStarts', {});
   }
 
   outMapping(): Promise<Variable[]> {
     return this.sendRequest('outMapping', {});
+  }
+
+  saveData(data: InscriptionSaveData): Promise<InscriptionValidation[]> {
+    return this.sendRequest('saveData', data);
   }
 
   sendRequest<K extends keyof InscriptionRequestTypes>(

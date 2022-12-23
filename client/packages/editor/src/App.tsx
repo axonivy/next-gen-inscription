@@ -1,7 +1,9 @@
 import set from 'lodash/fp/set';
 
 import { InscriptionData, InscriptionType, InscriptionValidation } from '@axonivy/inscription-core';
-import { ReactNode, useEffect, useMemo, useState } from 'react';
+import debounce from 'lodash/debounce';
+import isEqual from 'lodash/isEqual';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import '../style/App.css';
 import UserDialogEditor from './components/editors/UserDialogEditor';
 import UserTaskEditor from './components/editors/UserTaskEditor';
@@ -27,41 +29,54 @@ export function success(initialData: InscriptionData): AppState {
 
 export interface AppProps {
   pid: string;
+  onStateChanged?: (data: InscriptionData, dirty: boolean) => void;
 }
 
-function App(props: AppProps) {
-  const [data, setData] = useState<any>();
+const App: React.FC<AppProps> = ({ pid, onStateChanged }) => {
+  const [data, setData] = useState<InscriptionData>();
   const [appState, setAppState] = useState<AppState>(waiting());
   const [validation, setValidation] = useState<InscriptionValidation[]>([]);
   const client = useClient();
 
+  const updateData = useCallback(<T,>(path: string | string[], value: T): void => {
+    // we know this function is always called on success when (previous) data is available
+    setData((prevData: InscriptionData | undefined) => ({ ...prevData!, data: set(path, value, prevData!.data) }));
+  }, []);
+
   useEffect(() => {
-    client
-      .data(props.pid)
-      .then(data => {
+    const dispose = client.onValidation(validation => setValidation(validation));
+    return () => dispose.dispose();
+  }, [client]);
+  
+  useEffect(() => {
+    const dispose = client.onDataChanged(newData => setAppState(success(newData)));
+    return () => dispose.dispose();
+  }, [client]);
+
+
+  useEffect(() => {
+    client.data(pid).then(data => {
+      if (data) {
         setAppState(success(data));
-        setData(data.data);
-      })
-      .catch(error => error(error));
-  }, [client, props.pid]);
+        setData(data);
+      } else {
+        setAppState(error('No data found.'));
+      }
+    }).catch(error => setAppState(error(error)));
+  }, [client, pid]);
 
   useEffect(() => {
-    //Fix: first load shouldn't trigger a save
-    if (appState.initialData) {
-      client
-        .saveData({ data: data, pid: appState.initialData.pid, type: appState.initialData.type })
-        .then(validation => setValidation(validation));
+    if (data) {
+      const dirty = !isEqual(appState.initialData, data);
+      if (onStateChanged) {
+        onStateChanged(data, dirty);
+      }
     }
-  }, [client, data, appState]);
-
-  const updateData = <T,>(path: string | string[], value: T): void => {
-    // we know this function is always called on success when data is available
-    setData((prev: any) => set(path, value, prev!));
-  };
+  }, [appState.initialData, data, onStateChanged]);
 
   const dataContext = useMemo(() => {
-    return { data: data, initialData: appState.initialData?.data, updateData, validation: validation };
-  }, [appState.initialData, data, validation]);
+    return { data: data?.data, initialData: appState.initialData?.data, updateData, validation };
+  }, [appState.initialData?.data, data?.data, updateData, validation]);
 
   if (appState.state === 'waiting') {
     return <div>Loading...</div>;
@@ -72,12 +87,29 @@ function App(props: AppProps) {
 
   return (
     <div className='App-header'>
-      <DataContextInstance.Provider value={dataContext}>{inscriptionEditor(appState.initialData?.type)}</DataContextInstance.Provider>
+      <DataContextInstance.Provider value={dataContext}>{InscriptionEditor(appState.initialData?.type)}</DataContextInstance.Provider>
     </div>
   );
 }
 
-const inscriptionEditor = (type?: InscriptionType): ReactNode => {
+export interface AutoSaveAppProps {
+  pid: string;
+  autoSaveDelay?: number;
+}
+
+export const AutoSaveApp: React.FC<AutoSaveAppProps> = ({ pid, autoSaveDelay = 200 }) => {
+  const client = useClient();
+
+  const autoSaveData = useMemo(() => debounce((data: InscriptionData, dirty: boolean): void => {
+    if (dirty) {
+      client.saveData(data);
+    }
+  }, autoSaveDelay), [client, autoSaveDelay]);
+
+  return <App pid={pid} onStateChanged={autoSaveData} />;
+}
+
+const InscriptionEditor = (type?: InscriptionType): ReactNode => {
   switch (type) {
     case 'UserDialog':
       return <UserDialogEditor />;

@@ -19,6 +19,14 @@ export declare module InscriptionProtocol {
   export type OutMappingRes = Variable[];
 }
 
+export interface InscriptionServer {
+  initialize(args: InscriptionProtocol.InitializeArgs): Promise<InscriptionProtocol.InitializeRes>;
+  data(args: InscriptionProtocol.InscriptionDataArgs): Promise<InscriptionProtocol.InscriptionDataRes>;
+  saveData(args: InscriptionProtocol.InscriptionSaveDataArgs): Promise<InscriptionProtocol.InscriptionSaveDataRes>;
+  dialogStarts(args: InscriptionProtocol.DialogStartsArgs): Promise<InscriptionProtocol.DialogStartsRes>;
+  outMapping(args: InscriptionProtocol.OutMappingArgs): Promise<InscriptionProtocol.OutMappingRes>;
+}
+
 export interface InscriptionRequestTypes {
   initialize: [InscriptionProtocol.InitializeArgs, InscriptionProtocol.InitializeRes];
   data: [InscriptionProtocol.InscriptionDataArgs, InscriptionProtocol.InscriptionDataRes];

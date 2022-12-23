@@ -1,13 +1,12 @@
-import { MonacoUtil, InscriptionClient, FormLanguage } from '@axonivy/inscription-core';
-import { App, ClientContextInstance, MonacoEditorUtil } from '../../../packages/editor/lib';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { FormLanguage, InscriptionClient, MonacoUtil } from '@axonivy/inscription-core';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { App, ClientContextInstance, MonacoEditorUtil } from '../../../packages/editor/lib';
 import './index.css';
 import { URLParams } from './url-helper';
 
 export async function start(): Promise<void> {
-  MonacoEditorUtil.initMonaco(monaco);
+  MonacoEditorUtil.initMonaco();
   MonacoUtil.initStandalone();
   const root = ReactDOM.createRoot(document.getElementById('root')!);
 

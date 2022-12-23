@@ -1,0 +1,86 @@
+#InscriptionWidget {
+    --editor-bg: var(--theia-editor-background);
+    --editor-shadow: 0;
+    --seperator-color: var(--theia-sideBarSectionHeader-border);
+    --tab-inactive-border: #a0a0a0;
+
+    --input-bg: var(--theia-input-background);
+    --input-color: var(--theia-input-foreground);
+    --button-bg: var(--theia-list-inactiveSelectionBackground);
+    --button-color: var(--theia-list-inactiveSelectionForeground);
+    --text-color: var(--theia-input-foreground);
+    --table-bg: var(--theia-input-background);
+    --table-row-bg: var(--theia-sideBar-background);
+
+    --border-radius: 0;
+    --focus-shadow: 0;
+
+    --error-color: var(--theia-editorError-foreground);
+    --warning-color: var(--theia-editorWarning-foreground);
+    --info-color: var(--theia-editorInfo-foreground);
+}
+
+#InscriptionWidget .App-header {
+    background-color: var(--theia-editor-background);
+    align-items: stretch;
+    justify-content: start;
+    min-height: auto;
+}
+
+#InscriptionWidget .editor {
+    padding-top: 0;
+}
+
+#InscriptionWidget .tabs-trigger[data-state='active'] {
+    border-color: unset;
+}
+
+#InscriptionWidget .tabs-trigger[data-state='inactive'] {
+    border-color: var(--theia-list-inactiveSelectionBackground);
+}
+
+#InscriptionWidget .tabs-trigger .dirty-state {
+    --button-color: #bababa;
+}
+
+#InscriptionWidget .input {
+    font-size: var(--theia-ui-font-size1);
+    outline: var(--theia-dropdown-border) solid 1px;
+    outline-offset: -1px;
+    color: var(--theia-input-foreground);
+}
+
+#InscriptionWidget .label, #InscriptionWidget .table .input {
+    outline: transparent;
+}
+
+#InscriptionWidget .tag, #InscriptionWidget .table-root {
+    outline: var(--theia-dropdown-border) solid 1px;
+    outline-offset: -1px;
+}
+
+#InscriptionWidget .label, #InscriptionWidget .table .table-column-header, #InscriptionWidget .collapsible-trigger {
+    font-size: var(--theia-ui-font-size0);
+    font-weight: bold;
+    text-transform: capitalize
+}
+
+#InscriptionWidget .input.code-editor {
+    background-color: transparent;
+}
+
+.popover-content {
+    --editor-bg: var(--theia-editor-background);
+    --input-bg: var(--theia-mainToolbar-background);
+    --input-color: var(--theia-sideBarSectionHeader-foreground);
+    --text-color: var(--theia-foreground);
+    --button-bg: var(--theia-mainToolbar-background);
+}
+
+.popover-close:hover {
+    cursor: pointer;
+}
+
+.popover-content svg {
+    border-style: unset;
+}

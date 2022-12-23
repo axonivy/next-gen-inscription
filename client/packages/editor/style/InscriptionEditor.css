@@ -37,6 +37,7 @@ button {
   color: var(--input-color);
   text-align: start;
   padding: 10px;
+  cursor: text;
 }
 textarea.input {
   resize: vertical;

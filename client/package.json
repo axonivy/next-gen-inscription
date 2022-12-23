@@ -7,7 +7,7 @@
     "node": ">=14.18.0"
   },
   "scripts": {
-    "prepare": "lerna run prepare",
+    "prepare": "lerna run prepare && yarn download:exampleServer",
     "ci": "yarn install && yarn lint:ci && yarn test:ci && yarn standalone build:production",
     "clean": "lerna run clean",
     "build": "lerna run build",
@@ -17,8 +17,11 @@
     "lint:ci": "yarn lint -o eslint.xml -f checkstyle",
     "lint:fix": "lerna run lint:fix --",
     "standalone": "yarn -s --cwd integrations/standalone",
+    "theia-electron": "yarn -s --cwd integrations/theia-electron",
+    "theia-browser": "yarn -s --cwd integrations/theia-browser",
     "test": "yarn --cwd packages/editor test",
-    "test:ci": "lerna run test:ci"
+    "test:ci": "lerna run test:ci",
+    "download:exampleServer": "ts-node scripts/download-glsp-server.ts"
   },
   "devDependencies": {
     "@types/node": "^16.7.13",
@@ -26,7 +29,12 @@
     "eslint-config-react-app": "^7.0.1",
     "lerna": "^6.1.0",
     "rimraf": "^3.0.2",
-    "typescript": "~4.5.5"
+    "typescript": "~4.5.5",
+    "ts-node": "^10.9.1",
+    "mvn-artifact-download": "^6.0.0"
+  },
+  "resolutions": {
+    "**/sprotty": "0.13.0-next.1c4343c.328"
   },
   "workspaces": [
     "packages/*",

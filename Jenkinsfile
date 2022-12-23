@@ -14,7 +14,8 @@ pipeline {
       steps {
         script {
           dir ('client') {
-            docker.build('node').inside {
+            // https://github.com/eclipse-glsp/glsp/blob/master/docker/ci/alpine/Dockerfile
+            docker.build('eclipseglsp/ci:alpine').inside {
               sh 'yarn ci'
             }
           }
