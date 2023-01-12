@@ -20,6 +20,7 @@ lib
 .env.production.local
 
 npm-debug.log*
+lerna-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
@@ -35,3 +36,6 @@ tsconfig.tsbuildinfo
 .browser_modules
 src-gen
 gen-webpack.config.js
+
+# vscode glsp example server
+server

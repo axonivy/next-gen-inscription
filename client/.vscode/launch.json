@@ -12,6 +12,20 @@
       "sourceMapPathOverrides": {
         "webpack:///src/*": "${webRoot}/*"
       }
+    },
+    {
+      "name": "Run Inscription & Workflow GLSP Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "${workspaceFolder}/integrations/vscode/workspace",
+        "--extensionDevelopmentPath=${workspaceFolder}/integrations/vscode/workflow-extension",
+        "--extensionDevelopmentPath=${workspaceFolder}/integrations/vscode/inscription-extension"
+      ],
+      "outFiles": ["${workspaceRoot}/integrations/vscode/workflow-extension/lib/*.js"],
+      "sourceMaps": true
     }
   ]
 }
+

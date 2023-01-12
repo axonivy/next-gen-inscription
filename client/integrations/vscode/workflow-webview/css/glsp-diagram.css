@@ -1,0 +1,27 @@
+:root {
+  --glsp-issue-background: var(--vscode-editor-background) !important;
+  --glsp-error-foreground: var(--vscode-editorError-foreground) !important;
+  --glsp-warning-foreground: var(--vscode-editorWarning-foreground) !important;
+  --glsp-info-foreground: var(--vscode-editorInfo-foreground) !important;
+}
+
+.tool-button {
+  background: var(--vscode-quickInput-background) !important;
+  color: var(--vscode-quickInput-foreground) !important;
+}
+
+.tool-button:hover {
+  cursor: pointer;
+  background: var(--vscode-list-hoverBackground) !important;
+  color: var(--vscode-quickInput-foreground) !important;
+}
+
+.tool-button.clicked {
+  background: var(--vscode-quickInputList-focusBackground) !important;
+  color: var(--vscode-quickInputList-focusForeground) !important;
+}
+
+.sprotty-popup {
+  background: var(--vscode-quickInput-background) !important;
+  color: var(--vscode-quickInput-foreground) !important;
+}

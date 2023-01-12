@@ -18,9 +18,16 @@ import { MonacoServices } from 'monaco-languageclient';
 import { buildWorkerDefinition } from 'monaco-editor-workers';
 
 export namespace MonacoUtil {
-  export function initStandalone() {
+  export function initStandalone(
+    workerDefinition = true,
+    workerPath = '../../node_modules/monaco-editor-workers/dist/workers',
+    basePath = new URL('', window.location.href).href,
+    useModuleWorker = false
+  ) {
     StandaloneServices.initialize({});
     MonacoServices.install();
-    buildWorkerDefinition('../../node_modules/monaco-editor-workers/dist/workers', new URL('', window.location.href).href, false);
+    if (workerDefinition) {
+      buildWorkerDefinition(workerPath, basePath, useModuleWorker);
+    }
   }
 }

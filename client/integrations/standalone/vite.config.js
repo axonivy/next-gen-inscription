@@ -23,5 +23,9 @@ export default defineConfig(() => {
     config.build.rollupOptions = { input: { app: './mock.html' } };
     config.server.open = false;
   }
+  if (process.env.VSCODE) {
+    config.build.rollupOptions = { input: { app: './vscode.html' } };
+    config.server.open = false;
+  }
   return config;
 });
