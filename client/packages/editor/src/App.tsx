@@ -4,7 +4,7 @@ import { InscriptionValidation } from '@axonivy/inscription-core';
 import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 import '@axonivy/editor-icons/dist/ivy-icons.css';
-import { DataContextInstance, DEFAULT_INSCRIPTION_TYPE, EditorContext, EditorContextInstance, useClient, useTheme } from './context';
+import { DataContextInstance, DEFAULT_EDITOR_CONTEXT, EditorContext, EditorContextInstance, useClient, useTheme } from './context';
 import { inscriptionEditor } from './components/editors/InscriptionEditor';
 import AppStateView from './AppStateView';
 import { AppState, errorState, successState, waitingState } from './app-state';
@@ -51,8 +51,8 @@ function App(props: AppProps) {
   const editorContext = useMemo<EditorContext>(() => {
     return {
       pid: props.pid,
-      readonly: appState.initialData?.readonly ?? false,
-      type: appState.initialData?.type ?? DEFAULT_INSCRIPTION_TYPE
+      readonly: appState.initialData?.readonly ?? DEFAULT_EDITOR_CONTEXT.readonly,
+      type: appState.initialData?.type ?? DEFAULT_EDITOR_CONTEXT.type
     };
   }, [props.pid, appState.initialData]);
 

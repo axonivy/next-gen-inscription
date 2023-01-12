@@ -45,7 +45,7 @@ const TaskTab = () => {
       </CollapsiblePart>
       <Expiry />
       <CollapsiblePart collapsibleLabel='Custom Fields' defaultOpen={false}>
-        <CustomFieldTable data={customField} onChange={setCustomField} />
+        <CustomFieldTable data={customField ?? []} onChange={setCustomField} />
       </CollapsiblePart>
       <CollapsiblePart collapsibleLabel='Code' defaultOpen={false}>
         <CodeEditor code={code} onChange={code => setCode(code ?? '')} location='task.code' />

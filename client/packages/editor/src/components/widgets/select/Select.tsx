@@ -3,6 +3,7 @@ import { useSelect } from 'downshift';
 import { memo } from 'react';
 import LabelInput from '../label/LabelInput';
 import { useReadonly } from '../../../context';
+import { Message } from 'src/components/props';
 
 export interface SelectItem {
   label: string;
@@ -10,10 +11,11 @@ export interface SelectItem {
 }
 
 const Select = (props: {
-  label?: string;
+  label: string;
   value?: SelectItem;
   onChange: (value: SelectItem) => void;
   items: SelectItem[];
+  message?: Message;
   children?: JSX.Element;
 }) => {
   const { isOpen, selectedItem, getToggleButtonProps, getLabelProps, getMenuProps, highlightedIndex, getItemProps } = useSelect<SelectItem>(
@@ -27,7 +29,7 @@ const Select = (props: {
 
   return (
     <div className='select'>
-      <LabelInput label={props.label} htmlFor='input' {...getLabelProps()}>
+      <LabelInput label={props.label} htmlFor='input' message={props.message} {...getLabelProps()}>
         <div className='select-input'>
           <button aria-label='toggle menu' className='select-button' type='button' {...getToggleButtonProps()} disabled={readonly}>
             <span>{selectedItem ? selectedItem.label : ''}</span>

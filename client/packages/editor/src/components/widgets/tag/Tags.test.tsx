@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Tags from './Tags';
-import { EditorContextInstance } from '../../../context';
+import { DEFAULT_EDITOR_CONTEXT, EditorContextInstance } from '../../../context';
 
 describe('Tags', () => {
   function renderTags(): {
@@ -88,7 +88,7 @@ describe('Tags', () => {
 
   test('tags support readonly mode', async () => {
     render(
-      <EditorContextInstance.Provider value={{ pid: '', readonly: true }}>
+      <EditorContextInstance.Provider value={{ ...DEFAULT_EDITOR_CONTEXT, readonly: true }}>
         <Tags tags={['test']} onChange={() => {}} />
       </EditorContextInstance.Provider>
     );

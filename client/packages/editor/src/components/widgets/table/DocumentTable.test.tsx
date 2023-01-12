@@ -1,9 +1,16 @@
 import React from 'react';
 import { Document } from '@axonivy/inscription-core';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import DocumentTable from './DocumentTable';
-import { EditorContextInstance } from '../../../context';
+import {
+  assertAddAndRemoveWithKeyboard,
+  assertAddRow,
+  assertRemoveRow,
+  assertTableHeaders,
+  assertTableRows,
+  renderReadonlyTable
+} from './table.test-helper';
 
 describe('DocumentTable', () => {
   const documents: Document[] = [
@@ -21,26 +28,6 @@ describe('DocumentTable', () => {
       // eslint-disable-next-line testing-library/no-unnecessary-act
       rerender: () => view.rerender(<DocumentTable data={data} onChange={change => (data = change)} />)
     };
-  }
-
-  function assertTableHeaders(expectedHeaders: string[]) {
-    const headers = screen.getAllByRole('columnheader');
-    expect(headers).toHaveLength(expectedHeaders.length);
-    headers.forEach((header, index) => {
-      expect(header).toHaveTextContent(expectedHeaders[index]);
-    });
-  }
-
-  function assertTableRows(expectedRows: (RegExp | string)[]) {
-    const rows = screen.getAllByRole('row');
-    expect(rows).toHaveLength(expectedRows.length);
-    rows.forEach((row, index) => {
-      expect(row).toHaveAccessibleName(expectedRows[index]);
-    });
-  }
-
-  function assertTableRowCount(expectedRows: number): Promise<void> {
-    return waitFor(() => expect(screen.getAllByRole('row')).toHaveLength(expectedRows));
   }
 
   test('table will render', () => {
@@ -63,49 +50,17 @@ describe('DocumentTable', () => {
 
   test('table can add new row', async () => {
     const view = renderTable();
-    await assertTableRowCount(4);
-
-    const addButton = screen.getByRole('button', { name: 'Add row' });
-    await userEvent.click(addButton);
-    expect(view.data()).toHaveLength(3);
-
-    view.rerender();
-    await assertTableRowCount(5);
+    await assertAddRow(view, 3);
   });
 
   test('table can remove a row', async () => {
     const view = renderTable();
-    await assertTableRowCount(4);
-
-    const removeButtons = screen.getAllByRole('button', { name: 'Remove row' });
-    expect(removeButtons).toHaveLength(2);
-    await userEvent.click(removeButtons[0]);
-    expect(view.data()).toHaveLength(1);
-
-    view.rerender();
-    await assertTableRowCount(3);
+    await assertRemoveRow(view, 1);
   });
 
   test('table can add/remove rows by keyboard', async () => {
     const view = renderTable();
-    await assertTableRowCount(4);
-
-    const addButton = screen.getByRole('button', { name: 'Add row' });
-    addButton.focus();
-    await userEvent.keyboard('[Enter]');
-    expect(view.data()).toHaveLength(3);
-
-    view.rerender();
-    await assertTableRowCount(5);
-
-    const removeButtons = screen.getAllByRole('button', { name: 'Remove row' });
-    expect(removeButtons).toHaveLength(3);
-    removeButtons[2].focus();
-    await userEvent.keyboard('[Enter]');
-    expect(view.data()).toHaveLength(2);
-
-    view.rerender();
-    await assertTableRowCount(4);
+    await assertAddAndRemoveWithKeyboard(view, 2);
   });
 
   test('table can edit cells', async () => {
@@ -129,14 +84,7 @@ describe('DocumentTable', () => {
   });
 
   test('table support readonly mode', async () => {
-    render(
-      <EditorContextInstance.Provider value={{ pid: '', readonly: true }}>
-        <DocumentTable data={documents} onChange={() => {}} />
-      </EditorContextInstance.Provider>
-    );
-
-    expect(screen.getByRole('button', { name: 'Add row' })).toBeDisabled();
-    expect(screen.getAllByRole('button', { name: 'Remove row' })[0]).toBeDisabled();
+    await renderReadonlyTable(<DocumentTable data={documents} onChange={() => {}} />);
     expect(screen.getByDisplayValue(/Doc 1/)).toBeDisabled();
   });
 });

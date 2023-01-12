@@ -4,7 +4,7 @@ import { Mapping } from '@axonivy/inscription-core';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import MappingTree from './MappingTree';
-import { EditorContextInstance } from '../../../context';
+import { DEFAULT_EDITOR_CONTEXT, EditorContextInstance } from '../../../context';
 
 describe('MappingTree', () => {
   const COL_ATTRIBUTES = /▶️ Attribute/;
@@ -85,7 +85,7 @@ describe('MappingTree', () => {
 
   test('tree support readonly mode', async () => {
     render(
-      <EditorContextInstance.Provider value={{ pid: '', readonly: true }}>
+      <EditorContextInstance.Provider value={{ ...DEFAULT_EDITOR_CONTEXT, readonly: true }}>
         <MappingTree data={data} mappingTree={USER_DIALOG_META_CALL} onChange={() => {}} />
       </EditorContextInstance.Provider>
     );
